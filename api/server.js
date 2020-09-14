@@ -2,9 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
+const db = require('../database/dbConfig')
+
 const authenticate = require('../auth/authenticate-middleware.js');
 const authRouter = require('../auth/auth-router.js');
 const jokesRouter = require('../jokes/jokes-router.js');
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 const server = express();
 
