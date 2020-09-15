@@ -30,4 +30,38 @@ router.post('/login', (req, res) => {
   // implement login
 });
 
+
+router.post('/login', async (req, res, next) => {
+  try {
+    const { username, password } = req.body
+    const user = await Users.findBy({ username }).first()
+
+    if(!user) {
+      return res.status(401).json({
+        message: "username or password is incorrect"
+      })
+    }
+
+const passwordValid =  await bcrypt.compare(password, user.password)
+
+if(!passwordValid) {
+  return res.status(401).json({
+    message: 'invalid credentials'
+  })
+}
+
+//this is where we generate a new JSON web token upon logging in a user
+const token = jwt.sign({
+  userID: user.id,
+  userRole:"basic",
+}, process.env.JWT_SECRET)
+res.json({
+  message: `welcome ${user.username}`,
+  token: token
+})
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router;
